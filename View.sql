@@ -1,0 +1,41 @@
+-- ============================================================
+--  BAGIAN 4 – VIEW
+-- ============================================================
+USE perpustakaan;
+-- View 1: Ringkasan status peminjaman aktif
+CREATE OR REPLACE VIEW v_peminjaman_aktif AS
+SELECT
+    pm.id_peminjaman,
+    a.nama_anggota,
+    a.no_telp,
+    b.judul_buku,
+    pt.nama_petugas,
+    pm.tanggal_pinjam,
+    pm.tanggal_jatuh_tempo,
+    DATEDIFF(CURDATE(), pm.tanggal_jatuh_tempo) AS hari_terlambat
+FROM peminjaman      pm
+JOIN anggota         a  ON pm.id_anggota     = a.id_anggota
+JOIN petugas         pt ON pm.id_petugas     = pt.id_petugas
+JOIN detail_peminjaman dp ON pm.id_peminjaman = dp.id_peminjaman
+JOIN buku            b  ON dp.id_buku        = b.id_buku
+WHERE pm.status_pinjam = 'Dipinjam';
+
+-- View 2: Laporan denda keseluruhan per anggota
+CREATE OR REPLACE VIEW v_laporan_denda_anggota AS
+SELECT
+    a.id_anggota,
+    a.nama_anggota,
+    a.email,
+    COUNT(d.id_denda)                             AS jumlah_transaksi_denda,
+    SUM(d.jumlah_denda)                           AS total_denda,
+    SUM(CASE WHEN d.status_bayar = 'Lunas'
+             THEN d.jumlah_denda ELSE 0 END)      AS sudah_dibayar,
+    SUM(CASE WHEN d.status_bayar = 'Belum Lunas'
+             THEN d.jumlah_denda ELSE 0 END)      AS sisa_tagihan
+FROM denda      d
+JOIN pengembalian pg ON d.id_pengembalian = pg.id_pengembalian
+JOIN peminjaman   pm ON pg.id_peminjaman  = pm.id_peminjaman
+JOIN anggota       a ON pm.id_anggota     = a.id_anggota
+GROUP BY a.id_anggota, a.nama_anggota, a.email;
+
+SELECT * FROM v_peminjaman_aktif;
