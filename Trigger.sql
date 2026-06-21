@@ -47,4 +47,22 @@ BEGIN
         SET MESSAGE_TEXT = 'Data peminjaman tidak boleh dihapus untuk menjaga histori transaksi.';
 END$$
 
+-- Trigger 5: Auto insert ke tabel denda saat pengembalian terlambat
+--   Dipicu setiap INSERT ke pengembalian dengan terlambat_hari > 0.
+--   Menghitung jumlah_denda = terlambat_hari * 2000 secara otomatis.
+--   Status awal selalu 'Belum Lunas' — diupdate manual saat anggota bayar.
+CREATE TRIGGER trg_auto_insert_denda
+AFTER INSERT ON pengembalian
+FOR EACH ROW
+BEGIN
+    IF NEW.terlambat_hari > 0 THEN
+        INSERT INTO denda (id_pengembalian, jumlah_denda, status_bayar)
+        VALUES (NEW.id_pengembalian, NEW.terlambat_hari * 2000, 'Belum Lunas');
+    END IF;
+END$$
+
 DELIMITER ;
+
+
+SELECT * FROM denda;
+SELECT * FROM pengembalian;

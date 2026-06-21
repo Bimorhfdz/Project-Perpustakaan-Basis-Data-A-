@@ -1,6 +1,6 @@
 --  BAGIAN 2 – DML (INSERT DATA DUMMY)
 USE perpustakaan;
--- Kategori Buku 
+-- ── Kategori Buku ────────────────────────────────────────────
 INSERT INTO kategori_buku (nama_kategori) VALUES
 ('Teknologi Informasi'),
 ('Matematika'),
@@ -11,7 +11,7 @@ INSERT INTO kategori_buku (nama_kategori) VALUES
 ('Kesehatan'),
 ('Hukum');
 
--- Penerbit 
+-- ── Penerbit ─────────────────────────────────────────────────
 INSERT INTO penerbit (nama_penerbit, alamat, no_telp) VALUES
 ('Andi Publisher',     'Jl. Beo 38-40, Yogyakarta',        '0274-560264'),
 ('Elex Media',         'Jl. Palmerah Barat 29-37, Jakarta', '021-5347503'),
@@ -22,7 +22,7 @@ INSERT INTO penerbit (nama_penerbit, alamat, no_telp) VALUES
 ('Erlangga',           'Jl. H. Baping Raya 100, Jakarta',   '021-4603082'),
 ('Prenada Media',      'Jl. Tambra Raya 23, Jakarta',       '021-4243444');
 
--- Penulis
+-- ── Penulis ──────────────────────────────────────────────────
 INSERT INTO penulis (nama_penulis, negara) VALUES
 ('Abdul Kadir',       'Indonesia'),
 ('Bunafit Nugroho',   'Indonesia'),
@@ -33,7 +33,7 @@ INSERT INTO penulis (nama_penulis, negara) VALUES
 ('Donald Knuth',      'Amerika Serikat'),
 ('Thomas Cormen',     'Amerika Serikat');
 
--- Rak Buku 
+-- ── Rak Buku ─────────────────────────────────────────────────
 INSERT INTO rak_buku (kode_rak, lokasi_rak) VALUES
 ('R-A01', 'Lantai 1 – Baris A'),
 ('R-A02', 'Lantai 1 – Baris B'),
@@ -41,7 +41,7 @@ INSERT INTO rak_buku (kode_rak, lokasi_rak) VALUES
 ('R-B02', 'Lantai 2 – Baris B'),
 ('R-C01', 'Lantai 3 – Baris A');
 
--- Buku 
+-- ── Buku ─────────────────────────────────────────────────────
 INSERT INTO buku (judul_buku, tahun_terbit, isbn, stok, id_kategori, id_penerbit, id_penulis, id_rak) VALUES
 ('Pengantar Sistem Basis Data',         2020, '978-979-29-1001-1', 5, 1, 1, 1, 1),
 ('MySQL untuk Pemula',                  2021, '978-979-29-1002-2', 4, 1, 2, 2, 1),
@@ -64,9 +64,9 @@ INSERT INTO buku (judul_buku, tahun_terbit, isbn, stok, id_kategori, id_penerbit
 ('Introduction to Algorithms',          2009, '978-026-20-3293-7', 2, 1, 3, 8, 2),
 ('Statistika untuk Penelitian',         2020, '978-979-29-1020-0', 4, 2, 5, 5, 3);
 
--- Anggota 
+-- ── Anggota ──────────────────────────────────────────────────
 INSERT INTO anggota (nama_anggota, jenis_kelamin, alamat, no_telp, email, tgl_daftar, status_anggota) VALUES
-('Budi Santoso',       'L', 'Jl. Melati 5, Purwokerto',     '08112345601', 'budi@email.com',       '2024-01-10', 'Aktif'),
+('Budi Pratikno',       'L', 'Jl. Melati 5, Purwokerto',     '08112345601', 'budi@email.com',       '2024-01-10', 'Aktif'),
 ('Siti Rahayu',        'P', 'Jl. Dahlia 12, Purwokerto',    '08112345602', 'siti@email.com',       '2024-01-15', 'Aktif'),
 ('Andi Prasetyo',      'L', 'Jl. Mawar 3, Banyumas',        '08112345603', 'andi@email.com',       '2024-02-01', 'Aktif'),
 ('Dewi Lestari',       'P', 'Jl. Kenanga 7, Purwokerto',    '08112345604', 'dewi@email.com',       '2024-02-14', 'Aktif'),
@@ -82,14 +82,14 @@ INSERT INTO anggota (nama_anggota, jenis_kelamin, alamat, no_telp, email, tgl_da
 ('Laras Maharani',     'P', 'Jl. Melati 18, Purwokerto',    '08112345614', 'laras@email.com',      '2024-07-20', 'Aktif'),
 ('Wahyu Hidayat',      'L', 'Jl. Kenanga 30, Cilacap',      '08112345615', 'wahyu@email.com',      '2024-08-05', 'Aktif');
 
--- Petugas 
+-- ── Petugas ──────────────────────────────────────────────────
 INSERT INTO petugas (nama_petugas, username, password, level_petugas) VALUES
 ('Admin Perpustakaan', 'admin',   SHA2('admin123',  256), 'Admin'),
 ('Rina Wulandari',     'rina',    SHA2('rina1234',   256), 'Petugas'),
 ('Deni Saputra',       'deni',    SHA2('deni1234',   256), 'Petugas'),
 ('Lilis Suryani',      'lilis',   SHA2('lilis1234',  256), 'Petugas');
 
--- Peminjaman 
+-- ── Peminjaman ───────────────────────────────────────────────
 INSERT INTO peminjaman (id_anggota, id_petugas, tanggal_pinjam, tanggal_jatuh_tempo, status_pinjam) VALUES
 (1,  2, '2025-11-01', '2025-11-08', 'Selesai'),   -- #1
 (2,  3, '2025-11-03', '2025-11-10', 'Selesai'),   -- #2
@@ -114,7 +114,7 @@ INSERT INTO peminjaman (id_anggota, id_petugas, tanggal_pinjam, tanggal_jatuh_te
 (9,  3, '2026-06-01', '2026-06-08', 'Dipinjam'),  -- #21
 (10, 4, '2026-06-03', '2026-06-10', 'Dipinjam');  -- #22
 
--- Detail Peminjaman 
+-- ── Detail Peminjaman ────────────────────────────────────────
 INSERT INTO detail_peminjaman (id_peminjaman, id_buku, jumlah) VALUES
 (1,  1, 1),(1, 2, 1),
 (2,  3, 1),
@@ -139,40 +139,34 @@ INSERT INTO detail_peminjaman (id_peminjaman, id_buku, jumlah) VALUES
 (21,  2, 1),
 (22, 17, 1);
 
--- Pengembalian 
+-- 4. Insert pengembalian ulang (trigger akan otomatis isi denda)
 INSERT INTO pengembalian (id_peminjaman, tanggal_kembali, terlambat_hari) VALUES
 (1,  '2025-11-08',  0),
-(2,  '2025-11-13',  3),   -- terlambat 3 hari
+(2,  '2025-11-15',  5),
 (3,  '2025-11-12',  0),
-(4,  '2025-11-20',  3),   -- terlambat 3 hari
+(4,  '2025-11-21',  4),
 (5,  '2025-11-19',  0),
-(6,  '2025-11-25',  3),   -- terlambat 3 hari
+(6,  '2025-11-29',  7),
 (7,  '2025-11-27',  0),
-(8,  '2025-12-10',  2),   -- terlambat 2 hari
+(8,  '2025-12-11',  3),
 (9,  '2025-12-10',  0),
-(10, '2025-12-14',  2),   -- terlambat 2 hari
+(10, '2025-12-18',  6),
 (11, '2025-12-17',  0),
-(12, '2025-12-28',  6),   -- terlambat 6 hari
+(12, '2025-12-30',  8),
 (13, '2026-01-12',  0),
-(14, '2026-01-17',  0),
+(14, '2026-01-19',  2),
 (15, '2026-01-22',  0),
 (16, '2026-02-08',  0),
-(17, '2026-02-20',  3),   -- terlambat 3 hari
-(18, '2026-03-12',  4);   -- terlambat 4 hari
+(17, '2026-02-22',  5),
+(18, '2026-03-14',  6);
 
--- Denda 
--- Rumus: terlambat_hari * 2000
-INSERT INTO denda (id_pengembalian, jumlah_denda, status_bayar) VALUES
-(2,   6000.00, 'Lunas'),
-(4,   6000.00, 'Lunas'),
-(6,   6000.00, 'Lunas'),
-(8,   4000.00, 'Lunas'),
-(10,  4000.00, 'Lunas'),
-(12, 12000.00, 'Belum Lunas'),
-(17,  6000.00, 'Lunas'),
-(18,  8000.00, 'Belum Lunas');
+-- ── Denda ────────────────────────────────────────────────────
+-- Tabel denda TIDAK diisi manual di DML.
+-- Trigger trg_auto_insert_denda akan otomatis mengisi tabel ini
+-- setiap kali ada INSERT ke pengembalian dengan terlambat_hari > 0.
+-- Rumus: jumlah_denda = terlambat_hari * 2000. Status awal: 'Belum Lunas'.
 
--- Reservasi
+-- ── Reservasi ────────────────────────────────────────────────
 INSERT INTO reservasi (id_anggota, id_buku, tanggal_reservasi, status_reservasi) VALUES
 (4,  5, '2025-11-02', 'Selesai'),
 (7, 14, '2025-11-25', 'Selesai'),
@@ -181,6 +175,7 @@ INSERT INTO reservasi (id_anggota, id_buku, tanggal_reservasi, status_reservasi)
 (14, 5, '2026-03-10', 'Batal'),
 (15, 2, '2026-04-01', 'Aktif'),
 (1, 17, '2026-06-02', 'Aktif');
+
 
 SELECT * FROM buku;
 SELECT * FROM anggota;

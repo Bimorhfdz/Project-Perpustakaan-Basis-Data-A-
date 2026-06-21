@@ -1,30 +1,25 @@
--- ============================================================
---  BAGIAN 7 – FUNCTION
--- ============================================================
 USE perpustakaan;
 DELIMITER $$
 
--- Function 1: Hitung denda berdasarkan id_peminjaman
-CREATE FUNCTION fn_hitung_denda(p_id_peminjaman INT)
+-- Function 1: Total denda belum lunas milik satu anggota
+--   Membaca langsung dari tabel denda yang sudah tercatat,
+--   sehingga hasilnya konsisten dengan data transaksi nyata.
+CREATE FUNCTION fn_total_denda_anggota(p_id_anggota INT)
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 READS SQL DATA
 BEGIN
-    DECLARE v_jatuh_tempo DATE;
-    DECLARE v_terlambat   INT DEFAULT 0;
+    DECLARE v_total DECIMAL(10,2) DEFAULT 0.00;
 
-    SELECT tanggal_jatuh_tempo INTO v_jatuh_tempo
-    FROM   peminjaman WHERE id_peminjaman = p_id_peminjaman;
+    SELECT COALESCE(SUM(d.jumlah_denda), 0)
+    INTO   v_total
+    FROM   denda d
+    JOIN   pengembalian pg ON d.id_pengembalian = pg.id_pengembalian
+    JOIN   peminjaman   pm ON pg.id_peminjaman  = pm.id_peminjaman
+    WHERE  pm.id_anggota  = p_id_anggota
+      AND  d.status_bayar = 'Belum Lunas';
 
-    IF v_jatuh_tempo IS NULL THEN
-        RETURN 0;
-    END IF;
-
-    IF CURDATE() > v_jatuh_tempo THEN
-        SET v_terlambat = DATEDIFF(CURDATE(), v_jatuh_tempo);
-    END IF;
-
-    RETURN v_terlambat * 2000;
+    RETURN v_total;
 END$$
 
 -- Function 2: Cek apakah anggota boleh meminjam (TRUE = boleh)
@@ -65,10 +60,13 @@ END$$
 DELIMITER ;
 
 -- Contoh penggunaan function:
-SELECT fn_hitung_denda(19) AS estimasi_denda;
+SELECT fn_total_denda_anggota(2) AS total_denda_belum_lunas;
 SELECT fn_boleh_pinjam(1) AS boleh_pinjam;
-SELECT nama_anggota, fn_boleh_pinjam(id_anggota) AS boleh_pinjam FROM anggota;
-
+SELECT 
+    nama_anggota, 
+    fn_total_denda_anggota(id_anggota) AS sisa_denda,
+    fn_boleh_pinjam(id_anggota)        AS boleh_pinjam
+FROM anggota;
 
 -- ============================================================
 --  SELESAI – Sistem Manajemen Perpustakaan siap digunakan.
