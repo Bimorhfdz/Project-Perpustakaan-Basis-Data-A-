@@ -56,7 +56,7 @@ perpustakaan/
 
 ## 🗺️ ERD
 
-![ERD Sistem Manajemen Perpustakaan](ERD/ERD_Perpustakaan.png)
+![ERD Sistem Manajemen Perpustakaan](ERD_Perpustakaan.png)
 
 ## ▶️ Cara Menjalankan Script
 
