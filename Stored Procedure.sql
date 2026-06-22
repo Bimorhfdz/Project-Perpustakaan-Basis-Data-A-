@@ -7,73 +7,7 @@ DELIMITER $$
 
 -- SP1: Proses peminjaman buku
 -- Parameter: id anggota, id petugas, daftar id buku (comma-separated), jumlah hari pinjam
-CREATE PROCEDURE sp_pinjam_buku(
-    IN  p_id_anggota  INT,
-    IN  p_id_petugas  INT,
-    IN  p_id_buku     INT,
-    OUT p_pesan        VARCHAR(200)
-)
-BEGIN
-    DECLARE v_status_anggota  VARCHAR(20);
-    DECLARE v_denda_belum     INT DEFAULT 0;
-    DECLARE v_stok            INT;
-    DECLARE v_pinjam_aktif    INT;
-    DECLARE v_id_peminjaman   INT;
 
-    -- Cek status anggota
-    SELECT status_anggota INTO v_status_anggota
-    FROM anggota WHERE id_anggota = p_id_anggota;
-
-    IF v_status_anggota != 'Aktif' THEN
-        SET p_pesan = 'GAGAL: Anggota tidak aktif.';
-        LEAVE sp_label;
-    END IF;
-
-    -- Cek denda belum lunas
-    SELECT COUNT(*) INTO v_denda_belum
-    FROM denda d
-    JOIN pengembalian pg ON d.id_pengembalian = pg.id_pengembalian
-    JOIN peminjaman   pm ON pg.id_peminjaman  = pm.id_peminjaman
-    WHERE pm.id_anggota = p_id_anggota
-      AND d.status_bayar = 'Belum Lunas';
-
-    IF v_denda_belum > 0 THEN
-        SET p_pesan = 'GAGAL: Anggota masih memiliki denda belum lunas.';
-        LEAVE sp_label;
-    END IF;
-
-    -- Cek batas 3 buku pinjam aktif
-    SELECT COUNT(*) INTO v_pinjam_aktif
-    FROM peminjaman pm
-    JOIN detail_peminjaman dp ON pm.id_peminjaman = dp.id_peminjaman
-    WHERE pm.id_anggota = p_id_anggota
-      AND pm.status_pinjam = 'Dipinjam';
-
-    IF v_pinjam_aktif >= 3 THEN
-        SET p_pesan = 'GAGAL: Anggota sudah mencapai batas 3 buku pinjam.';
-        LEAVE sp_label;
-    END IF;
-
-    -- Cek stok buku
-    SELECT stok INTO v_stok FROM buku WHERE id_buku = p_id_buku;
-    IF v_stok < 1 THEN
-        SET p_pesan = 'GAGAL: Stok buku habis.';
-        LEAVE sp_label;
-    END IF;
-
-    -- Insert peminjaman
-    INSERT INTO peminjaman (id_anggota, id_petugas, tanggal_pinjam, tanggal_jatuh_tempo, status_pinjam)
-    VALUES (p_id_anggota, p_id_petugas, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), 'Dipinjam');
-
-    SET v_id_peminjaman = LAST_INSERT_ID();
-
-    INSERT INTO detail_peminjaman (id_peminjaman, id_buku, jumlah)
-    VALUES (v_id_peminjaman, p_id_buku, 1);
-
-    SET p_pesan = CONCAT('BERHASIL: Peminjaman #', v_id_peminjaman, ' dicatat.');
-END$$
--- Wrapper karena LEAVE memerlukan label blok; kita bungkus dengan BEGIN/END berlabel:
-DROP PROCEDURE IF EXISTS sp_pinjam_buku$$
 CREATE PROCEDURE sp_pinjam_buku(
     IN  p_id_anggota  INT,
     IN  p_id_petugas  INT,
@@ -126,7 +60,8 @@ sp_label: BEGIN
     VALUES (p_id_anggota, p_id_petugas, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), 'Dipinjam');
     SET v_id_peminjaman = LAST_INSERT_ID();
 
-    INSERT INTO detail_peminjaman (id_peminjaman, id_buku, jumlah) VALUES (v_id_peminjaman, p_id_buku, 1);
+    INSERT INTO detail_peminjaman (id_peminjaman, id_buku, jumlah)
+    VALUES (v_id_peminjaman, p_id_buku, 1);
 
     SET p_pesan = CONCAT('BERHASIL: Peminjaman #', v_id_peminjaman, ' dicatat. Jatuh tempo: ',
                          DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 7 DAY), '%d-%m-%Y'));

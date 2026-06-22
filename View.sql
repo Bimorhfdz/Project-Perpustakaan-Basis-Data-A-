@@ -38,4 +38,22 @@ JOIN peminjaman   pm ON pg.id_peminjaman  = pm.id_peminjaman
 JOIN anggota       a ON pm.id_anggota     = a.id_anggota
 GROUP BY a.id_anggota, a.nama_anggota, a.email;
 
+-- View 3: Monitoring stok buku real-time (terupdate otomatis oleh trigger)
+CREATE OR REPLACE VIEW v_stok_buku AS
+SELECT
+    b.id_buku,
+    b.judul_buku,
+    kb.nama_kategori,
+    pu.nama_penulis,
+    r.kode_rak,
+    b.stok AS stok_tersedia
+FROM buku          b
+JOIN kategori_buku kb ON b.id_kategori = kb.id_kategori
+JOIN penulis       pu ON b.id_penulis  = pu.id_penulis
+JOIN rak_buku       r ON b.id_rak      = r.id_rak
+ORDER BY b.stok ASC;
+
+-- Cek hasilnya
+SELECT * FROM v_stok_buku;
 SELECT * FROM v_peminjaman_aktif;
+SELECT * FROM v_laporan_denda_anggota;
